@@ -571,6 +571,7 @@ simple compression scheme: the first byte indicates the encoding, the
 rest contains the data.
 
 Encoding types:
+
 * `0`: uncompressed array of `short_channel_id` types, in ascending order.
 * `1`: array of `short_channel_id` types, in ascending order, compressed with zlib deflate<sup>[1](#reference-1)</sup>
 
@@ -588,6 +589,7 @@ Query messages can be extended with optional fields that can help reduce the num
 - checksum-based filtering of `channel_update` messages: only ask for `channel_update` messages that carry different information from the ones you already have.
 
 Nodes can signal that they support extended gossip queries with the `gossip_queries_ex` feature bit.
+Nodes can signal that they support zlib compression with the `zlib_compress` feature bit.
 
 ### The `query_short_channel_ids`/`reply_short_channel_ids_end` Messages
 
