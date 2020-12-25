@@ -1,27 +1,24 @@
-# BOLT #0: Introduction and Index
+# BOLT #0: Lightning Networkの紹介と目次
 
-Welcome, friend! These Basis of Lightning Technology (BOLT) documents
-describe a layer-2 protocol for off-chain bitcoin transfer by mutual
-cooperation, relying on on-chain transactions for enforcement if
-necessary.
+皆さんこんにちは！
+このドキュメントは、Bitcoinのオフチェーン取引(ブロックチェーン外の高速な取引)を行え、必要な時はオンチェーン取引を頼って実行される、
+Lightning Networkというレイヤ2プロトコルに関して説明しているドキュメントです。通称「Basis of Lightning Technology(BOLT)」といいます。
 
-Some requirements are subtle; we have tried to highlight motivations
-and reasoning behind the results you see here. I'm sure we've fallen
-short; if you find any part confusing or wrong, please contact us and
-help us improve.
+一部の要件はやや不確実です。私たちは動機と結果に基づく推論を強調してここに記そうとしました。
+何か分かりにくいところや間違っているところがありましたら、ご連絡をいただき、改善にお役立てください。
 
-This is version 0.
+このドキュメントはバージョン0です
 
-1. [BOLT #1](01-messaging.md): Base Protocol
-2. [BOLT #2](02-peer-protocol.md): Peer Protocol for Channel Management
-3. [BOLT #3](03-transactions.md): Bitcoin Transaction and Script Formats
-4. [BOLT #4](04-onion-routing.md): Onion Routing Protocol
-5. [BOLT #5](05-onchain.md): Recommendations for On-chain Transaction Handling
-7. [BOLT #7](07-routing-gossip.md): P2P Node and Channel Discovery
-8. [BOLT #8](08-transport.md): Encrypted and Authenticated Transport
-9. [BOLT #9](09-features.md): Assigned Feature Flags
-10. [BOLT #10](10-dns-bootstrap.md): DNS Bootstrap and Assisted Node Location
-11. [BOLT #11](11-payment-encoding.md): Invoice Protocol for Lightning Payments
+1. [BOLT #1](01-messaging.md): Lightning Networkにおける基盤プロトコル
+2. [BOLT #2](02-peer-protocol.md): Channel管理のためのピアプロトコル
+3. [BOLT #3](03-transactions.md): Bitcoinの取引とScript形式
+4. [BOLT #4](04-onion-routing.md): Onionルーティングプロトコル(Torネットワーク関連)
+5. [BOLT #5](05-onchain.md): オンチェーン取引の取り扱いについてのおすすめ
+7. [BOLT #7](07-routing-gossip.md): P2PノードとChannelの発見
+8. [BOLT #8](08-transport.md): 暗号化と認証済みトランスポート
+9. [BOLT #9](09-features.md): 割り当て済み特徴フラグ
+10. [BOLT #10](10-dns-bootstrap.md): DNSブートストラップとアシストノードの場所
+11. [BOLT #11](11-payment-encoding.md): Lightning支払いにおける請求プロトコル
 
 ## The Spark: A Short Introduction to Lightning
 
