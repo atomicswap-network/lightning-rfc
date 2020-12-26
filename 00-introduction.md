@@ -73,7 +73,6 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 
 ### 支払い請求(Payment Invoicing)
 
-A participant receives invoices that tell her what payments to make.
 参加者はどのように支払いを行えばよいかを示す請求を受け取ります。
 
 [BOLT #11: Lightning支払いにおける請求プロトコル](11-payment-encoding.md)では、支払者が後で支払いの成功を証明できるように、
