@@ -20,64 +20,64 @@ Lightning Networkというレイヤ2プロトコルに関して説明してい�
 10. [BOLT #10](10-dns-bootstrap.md): DNSブートストラップとアシストノードの場所
 11. [BOLT #11](11-payment-encoding.md): Lightning支払いにおける請求プロトコル
 
-## The Spark: A Short Introduction to Lightning
+## スパーク: Lightning Networkの簡易的な紹介
 
-Lightning is a protocol for making fast payments with Bitcoin using a
-network of channels.
+Lightning NetworkはChannelを用いたネットワークでBitcoinの高速な支払いを行うためのプロトコルです。
 
 ### Channels
 
-Lightning works by establishing *channels*: two participants create a
-Lightning payment channel that contains some amount of bitcoin (e.g.,
-0.1 bitcoin) that they've locked up on the Bitcoin network. It is
-spendable only with both their signatures.
+Lightning Networkは*Channel*を確立することで機能します。
+2人の参加者がLightning Networkの支払いChannelを生成し、
+そこにBitcoin NetworkにロックされたBitcoinを含みます(例えば、0.1BTCをNetwork上にロックします)。
+これらは双方の署名(Signature)によって支払い可能になります。
 
-Initially they each hold a bitcoin transaction that sends all the
-bitcoin (e.g. 0.1 bitcoin) back to one party.  They can later sign a new bitcoin
-transaction that splits these funds differently, e.g. 0.09 bitcoin to one
-party, 0.01 bitcoin to the other, and invalidate the previous bitcoin
-transaction so it won't be spent.
+最初に、彼ら(2人)がお互いにBitcoin取引を発行し、
+Lightning Network上で使用する全てのBitcoin(ここでは0.1BTCとする)を一つのパーティ(アドレス)に集約します。
+これらは、後に異なった新しいBitcoin取引によって分けて署名することができます。
+例えば、0.09BTCを一方のパーティに、もう一方のパーティに0.01BTCを送金することができます。
+そして、以前のBitcoin取引を無効化します。
 
-See [BOLT #2: Channel Establishment](02-peer-protocol.md#channel-establishment) for more on
-channel establishment and [BOLT #3: Funding Transaction Output](03-transactions.md#funding-transaction-output) for the format of the bitcoin transaction that creates the channel.  See [BOLT #5: Recommendations for On-chain Transaction Handling](05-onchain.md) for the requirements when participants disagree or fail, and the cross-signed bitcoin transaction must be spent.
+[BOLT #2: Channel Establishment](02-peer-protocol.md#channel-establishment)を見ることで、Channel確立についてさらに詳しく知ることが出来ます。
+また、[BOLT #3: Funding Transaction Output](03-transactions.md#funding-transaction-output)を見ることでChannelを作るにあたってのBitcoin取引形式について知ること出来ます。
+更に、[BOLT #5: オンチェーン取引の取り扱いについてのおすすめ](05-onchain.md)を見ることで参加者が拒否したり失敗したりした時の要件や、
+Bitcoin取引を使うためのクロス署名について知ることができます。
 
-### Conditional Payments
+### 条件付き支払い(Conditional Payment)
 
-A Lightning channel only allows payment between two participants, but channels can be connected together to form a network that allows payments between all members of the network. This requires the technology of a conditional payment, which can be added to a channel,
-e.g. "you get 0.01 bitcoin if you reveal the secret within 6 hours".
-Once the recipient presents the secret, that bitcoin transaction is
-replaced with one lacking the conditional payment and adding the funds
-to that recipient's output.
+Lightning NetworkのChannelは参加者2人の間での支払いのみ可能です。
+しかし、Channel同士を接続することで、ネットワークに参加する全ての人との支払いを可能にするネットワークを形成できます。
+この際に要求される技術が条件付き支払い(Conditional Payment)です。
+例えば、「あなたが6時間以内にsecretを明かせば0.01BTCがもらえます」といった具合に。
+この条件に乗った人(受信者といいます)がsecretを明かすと、Bitcoin取引の条件付き支払いが受信者あての支払いに変換されます。
 
-See [BOLT #2: Adding an HTLC](02-peer-protocol.md#adding-an-htlc-update_add_htlc) for the commands a participant uses to add a conditional payment, and [BOLT #3: Commitment Transaction](03-transactions.md#commitment-transaction) for the
-complete format of the bitcoin transaction.
+参加者が条件付き支払いを追加するために使用するコマンドは[BOLT #2: Adding an HTLC](02-peer-protocol.md#adding-an-htlc-update_add_htlc)をご覧ください。
+また、[BOLT #3: Commitment Transaction](03-transactions.md#commitment-transaction)では完了した際のBitcoin取引のフォーマットについて記載しています。
 
 ### Forwarding
 
-Such a conditional payment can be safely forwarded to another
-participant with a lower time limit, e.g. "you get 0.01 bitcoin if you reveal the secret
-within 5 hours".  This allows channels to be chained into a network
-without trusting the intermediaries.
+上記のような条件付き支払いは安全に、そしてより短いタイムリミットで参加者に転送されなければなりません。
+「あなたが5時間以内にsecretを明かせば0.01BTCがもらえます」のような具合に。
+これにより、仲介者の信頼なしにChannelをネットワークにつなぐことができます。
 
-See [BOLT #2: Forwarding HTLCs](02-peer-protocol.md#forwarding-htlcs) for details on forwarding payments, [BOLT #4: Packet Structure](04-onion-routing.md#packet-structure) for how payment instructions are transported.
+[BOLT #4: Packet Structure](04-onion-routing.md#packet-structure) for how payment instructions are transported.
+[BOLT #2: Forwarding HTLCs](02-peer-protocol.md#forwarding-htlcs)を見れば、支払いの転送の詳細を知ることができます。
+また、支払い指示の転送方法・形式については[BOLT #4: Packet Structure](04-onion-routing.md#packet-structure)をご覧ください。
 
 ### Network Topology
 
-To make a payment, a participant needs to know what channels it can
-send through.  Participants tell each other about channel and node
-creation, and updates.
+支払いを作成するには、参加者はどのChannelを使えば送信できるのか知っておく必要があります。
+参加者は他の人にChannelとNodeの作成について尋ね、更新します。
 
-See [BOLT #7: P2P Node and Channel Discovery](07-routing-gossip.md)
-for details on the communication protocol, and [BOLT #10: DNS
-Bootstrap and Assisted Node Location](10-dns-bootstrap.md) for initial
-network bootstrap.
+[BOLT #7: P2PノードとChannelの発見](07-routing-gossip.md)では、通信プロトコルに関する詳細を知ることができます。
+また、[BOLT #10: DNSブートストラップとアシストノードの場所](10-dns-bootstrap.md)で最初のネットワークブートストラップについて説明しています。
 
-### Payment Invoicing
+### 支払い請求(Payment Invoicing)
 
 A participant receives invoices that tell her what payments to make.
+参加者はどのように支払いを行えばよいかを示す請求を受け取ります。
 
-See [BOLT #11: Invoice Protocol for Lightning Payments](11-payment-encoding.md) for the protocol describing the destination and purpose of a payment such that the payer can later prove successful payment.
-
+[BOLT #11: Lightning支払いにおける請求プロトコル](11-payment-encoding.md)では、支払者が後で支払いの成功を証明できるように、
+支払いの宛先と目的を説明するプロトコルについて説明しています。
 
 ## Glossary and Terminology Guide
 
