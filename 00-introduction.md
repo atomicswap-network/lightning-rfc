@@ -78,46 +78,48 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 [BOLT #11: Lightning支払いにおける請求プロトコル](11-payment-encoding.md)では、支払者が後で支払いの成功を証明できるように、
 支払いの宛先と目的を説明するプロトコルについて説明しています。
 
-## Glossary and Terminology Guide
+## 技術用語集・用語ガイド
+元の用語を出来る限りそのまま掲載しています。
+基本的に説明文の頭に用語自体の日本語訳をつけています。
 
 * #### *Announcement*:
-   * A gossip message sent between *[peers](#peers)* intended to aid the discovery of a *[channel](#channel)* or a *[node](#node)*.
+   * アナウンス、*[peer](#peer)* 同士で送受信される伝言(Gossip Message)で、
+     *[Channel](#channel)* や *[Node](#node)* を発見するのを助けることを意図しています。.
 
 * #### `chain_hash`:
-   * The uniquely identifying hash of the target blockchain (usually the genesis hash).
-     This allows *[nodes](#node)* to create and reference *channels* on
-     several blockchains. Nodes are to ignore any messages that reference a
-     `chain_hash` that are unknown to them. Unlike `bitcoin-cli`, the hash is
-     not reversed but is used directly.
+   * ユニーク(被ってはならない)なハッシュで、ブロックチェーンを識別するのに用います(一般的にGenesis Blockのハッシュを用います)。
+     これにより、*[Node](#node)* は複数のブロックチェーン上で、*Channel* を作成・参照することができます。
+     Nodeは、未知の(別の)`chain_hash`を参照するメッセージを無視します。
+     `bitcoin-cli`とは違い、ハッシュは反転させずにそのまま使用します。
 
-     For the main chain Bitcoin blockchain, the `chain_hash` value MUST be
-     (encoded in hex):
-     `6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000`.
+     Bitcoinのメインチェーンの場合、`chain_hash`は
+     `6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000`
+     になります(hexでエンコード済み)。
+     
 
 * #### *Channel*:
-   * A fast, off-chain method of mutual exchange between two *[peers](#peers)*.
-   To transact funds, peers exchange signatures to create an updated *[commitment transaction](#commitment-transaction)*.
-   * _See closure methods: [mutual close](#mutual-close), [revoked transaction close](#revoked-transaction-close), [unilateral close](#unilateral-close)_
-   * _See related: [route](#route)_
+   * 相互に通貨を交換し合う2 *[Peer](#peer)* 間で開設される高速なオフチェーンの送金方法です。
+   資産を取引する際、Peerは署名を交換して更新済みの *[Commitment Transaction](#commitment-transaction)* を作成します。
+   * _Channelを閉じるメソッド: [Mutual Close(相互終了)](#mutual-close)、[Revoked Transaction Close(取り消された取引での終了)](#revoked-transaction-close)、[Unilateral Close(一方的な終了)](#unilateral-close)_
+   * _関係のある用語: [Route](#route)_
 
-* #### *Closing transaction*:
-   * A transaction generated as part of a *[mutual close](#mutual-close)*. A closing transaction is similar to a _commitment transaction_, but with no pending payments.
-   * _See related: [commitment transaction](#commitment-transaction), [funding transaction](#funding-transaction), [penalty transaction](#penalty-transaction)_
+* #### *Closing Transaction*:
+   * 終了時取引。*[Mutual close(相互終了)](#mutual-close)* 時に生成される取引の一つです。
+     Closing Transactionは _Commitment Transaction_ に似ていますが、保留中の支払いがありません。
+   * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
-* #### *Commitment number*:
-   * A 48-bit incrementing counter for each *[commitment transaction](#commitment-transaction)*; counters
-    are independent for each *peer* in the *channel* and start at 0.
-   * _See container: [commitment transaction](#commitment-transaction)_
-   * _See related: [closing transaction](#closing-transaction), [funding transaction](#funding-transaction), [penalty transaction](#penalty-transaction)_
+* #### *Commitment Number*:
+   * 言質取引のカウント(もしくはカウンター)。48ビットの値が増え続ける(減ることのない)カウンターで、互いの *[Commitment Transaction](#commitment-transaction)* の数をカウントしています。
+     カウンターは、各 *Peer* 内の *Channel* に独立して存在し、0からカウントスタートします。
+   * _この用語が説明に含まれる用語(内容): [Commitment Transaction(言質取引)](#commitment-transaction)_
+   * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
-* #### *Commitment revocation private key*:
-   * Every *[commitment transaction](#commitment-transaction)* has a unique commitment revocation private-key
-    value that allows the other *peer* to spend all outputs
-    immediately: revealing this key is how old commitment
-    transactions are revoked. To support revocation, each output of the
-    commitment transaction refers to the commitment revocation public key.
-   * _See container: [commitment transaction](#commitment-transaction)_
-   * _See originator: [per-commitment secret](#per-commitment-secret)_
+* #### *Commitment Revocation Private Key*:
+   * 言質撤回秘密鍵。すべての *[Commitment Transaction](#commitment-transaction)* は全ての資産を他の *Peer* にすぐに送金するユニーク(被ってはならない)な言質撤回秘密鍵を持っています。
+     この秘密鍵を明らかにするということは、古い言質取引を無効化するということです。
+     この撤回をサポートするために、各言質取引で言質撤回公開鍵を参照します(取引の出力内のスクリプトに含まれます)。
+   * _この用語が説明に含まれる用語(内容): [Commitment Transaction(言質取引)](#commitment-transaction)_
+   * _原案の用語: [Per-commitment Secret(言質ごとのシークレット)](#per-commitment-secret)_
 
 * #### *Commitment transaction*:
    * A transaction that spends the *[funding transaction](#funding-transaction)*.
