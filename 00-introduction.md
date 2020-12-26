@@ -47,7 +47,7 @@ Bitcoin取引を使うためのクロス署名について知ることができ�
 Lightning NetworkのChannelは参加者2人の間での支払いのみ可能です。
 しかし、Channel同士を接続することで、ネットワークに参加する全ての人との支払いを可能にするネットワークを形成できます。
 この際に要求される技術が条件付き支払い(Conditional Payment)です。
-例えば、「あなたが6時間以内にsecretを明かせば0.01BTCがもらえます」といった具合に。
+例えば、「あなたが6時間以内にSecretを明かせば0.01BTCがもらえます」といった具合に。
 この条件に乗った人(受信者といいます)がsecretを明かすと、Bitcoin取引の条件付き支払いが受信者あての支払いに変換されます。
 
 参加者が条件付き支払いを追加するために使用するコマンドは[BOLT #2: Adding an HTLC](02-peer-protocol.md#adding-an-htlc-update_add_htlc)をご覧ください。
@@ -56,7 +56,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 ### Forwarding
 
 上記のような条件付き支払いは安全に、そしてより短いタイムリミットで参加者に転送されなければなりません。
-「あなたが5時間以内にsecretを明かせば0.01BTCがもらえます」のような具合に。
+「あなたが5時間以内にSecretを明かせば0.01BTCがもらえます」のような具合に。
 これにより、仲介者の信頼なしにChannelをネットワークにつなぐことができます。
 
 [BOLT #4: Packet Structure](04-onion-routing.md#packet-structure) for how payment instructions are transported.
