@@ -106,13 +106,13 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 * #### *Closing Transaction*:
    * 終了時取引。*[Mutual Close(相互終了)](#mutual-close)* 時に生成される取引の一つです。
      Closing Transactionは _Commitment Transaction_ に似ていますが、保留中の支払いがありません。
-   * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
+   * _関連用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
 * #### *Commitment Number*:
    * 言質取引のカウント(もしくはカウンター)。48ビットの値が増え続ける(減ることのない)カウンターで、互いの *[Commitment Transaction](#commitment-transaction)* の数をカウントしています。
      カウンターは、各 *Peer* 内の *Channel* に独立して存在し、0からカウントスタートします。
    * _この用語が説明に含まれる用語(内容): [Commitment Transaction(言質取引)](#commitment-transaction)_
-   * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
+   * _関連用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
 * #### *Commitment Revocation Private Key*:
    * 言質撤回秘密鍵。すべての *[Commitment Transaction(言質取引)](#commitment-transaction)* は全ての資産を他の *Peer* にすぐに送金するユニーク(被ってはならない)な言質撤回秘密鍵を持っています。
