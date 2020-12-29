@@ -115,7 +115,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
    * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
 * #### *Commitment Revocation Private Key*:
-   * 言質撤回秘密鍵。すべての *[Commitment Transaction](#commitment-transaction)* は全ての資産を他の *Peer* にすぐに送金するユニーク(被ってはならない)な言質撤回秘密鍵を持っています。
+   * 言質撤回秘密鍵。すべての *[Commitment Transaction(言質取引)](#commitment-transaction)* は全ての資産を他の *Peer* にすぐに送金するユニーク(被ってはならない)な言質撤回秘密鍵を持っています。
      この秘密鍵を明らかにするということは、古い言質取引を無効化するということです。
      この撤回をサポートするために、各言質取引で言質撤回公開鍵を参照します(取引の出力内のスクリプトに含まれます)。
    * _この用語が説明に含まれる用語(内容): [Commitment Transaction(言質取引)](#commitment-transaction)_
