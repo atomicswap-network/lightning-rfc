@@ -100,7 +100,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 * #### *Channel*:
    * 相互に通貨を交換し合う2 *[Peer](#peer)* 間で開設される高速なオフチェーンの送金方法です。
    資産を取引する際、Peerは署名を交換して更新済みの *[Commitment Transaction](#commitment-transaction)* を作成します。
-   * _Channelを閉じるメソッド: [Mutual Close(相互終了)](#mutual-close)、[Revoked Transaction Close(取り消された取引での終了)](#revoked-transaction-close)、[Unilateral Close(一方的な終了)](#unilateral-close)_
+   * _Channelを終了するメソッド: [Mutual Close(相互終了)](#mutual-close)、[Revoked Transaction Close(取り消された取引での終了)](#revoked-transaction-close)、[Unilateral Close(一方的な終了)](#unilateral-close)_
    * _関係のある用語: [Route](#route)_
 
 * #### *Closing Transaction*:
