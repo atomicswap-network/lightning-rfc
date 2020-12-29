@@ -48,7 +48,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 しかし、Channel同士を接続することで、ネットワークに参加する全ての人との支払いを可能にするネットワークを形成できます。
 この際に要求される技術が条件付き支払い(Conditional Payment)です。
 例えば、「あなたが6時間以内にSecretを明かせば0.01BTCがもらえます」といった具合に。
-この条件に乗った人(受信者といいます)がsecretを明かすと、Bitcoin取引の条件付き支払いが受信者あての支払いに変換されます。
+この条件に乗った人(受信者といいます)がSecretを明かすと、Bitcoin取引の条件付き支払いが受信者あての支払いに変換されます。
 
 参加者が条件付き支払いを追加するために使用するコマンドは[BOLT #2: Adding an HTLC](02-peer-protocol.md#adding-an-htlc-update_add_htlc)をご覧ください。
 また、[BOLT #3: Commitment Transaction](03-transactions.md#commitment-transaction)では完了した際のBitcoin取引のフォーマットについて記載しています。
@@ -83,7 +83,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
 基本的に説明文の頭に用語自体の日本語訳をつけています。
 
 * #### *Announcement*:
-   * アナウンス、*[peer](#peer)* 同士で送受信される伝言(Gossip Message)で、
+   * アナウンス、*[Peer](#peer)* 同士で送受信される伝言(Gossip Message)で、
      *[Channel](#channel)* や *[Node](#node)* を発見するのを助けることを意図しています。.
 
 * #### `chain_hash`:
@@ -104,7 +104,7 @@ Lightning NetworkのChannelは参加者2人の間での支払いのみ可能で�
    * _関係のある用語: [Route](#route)_
 
 * #### *Closing Transaction*:
-   * 終了時取引。*[Mutual close(相互終了)](#mutual-close)* 時に生成される取引の一つです。
+   * 終了時取引。*[Mutual Close(相互終了)](#mutual-close)* 時に生成される取引の一つです。
      Closing Transactionは _Commitment Transaction_ に似ていますが、保留中の支払いがありません。
    * _関係のある用語: [Commitment Transaction(言質取引)](#commitment-transaction)、[Funding Transaction(供給取引)](#funding-transaction)、[Penalty Transaction(罰則取引)](#penalty-transaction)_
 
