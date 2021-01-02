@@ -1,107 +1,104 @@
-# BOLT #1: Base Protocol
+# BOLT #1: Lightning Networkにおける基盤プロトコル
 
-## Overview
+## 概要
 
-This protocol assumes an underlying authenticated and ordered transport mechanism that takes care of framing individual messages.
-[BOLT #8](08-transport.md) specifies the canonical transport layer used in Lightning, though it can be replaced by any transport that fulfills the above guarantees.
+このプロトコルは、個々のメッセージの枠組みを処理する、基盤となる認証済みの順序付けられた転送機構を前提としています。
+[BOLT #8](08-transport.md)では、Lightning Network上で標準的に使われる転送レイヤーについて指定しています。
+なお、これは上記の保証を満たす任意の転送方式に置き換えることができます。
 
-The default TCP port is 9735. This corresponds to hexadecimal `0x2607`: the Unicode code point for LIGHTNING.<sup>[1](#reference-1)</sup>
+Lightning NetworkにおけるデフォルトTCPポートは9735です。
+これは16進数の `0x2607` に対応します(UnicodeにおけるLIGHTNINGという文字の番号です<sup>[1](#reference-1)</sup>)
 
-All data fields are unsigned big-endian unless otherwise specified.
+特に指定がない限り、すべてのデータフィールドは符号なしのビッグエンディアンです。
 
-## Table of Contents
+## 目次
 
-  * [Connection Handling and Multiplexing](#connection-handling-and-multiplexing)
-  * [Lightning Message Format](#lightning-message-format)
-  * [Type-Length-Value Format](#type-length-value-format)
-  * [Fundamental Types](#fundamental-types)
-  * [Setup Messages](#setup-messages)
-    * [The `init` Message](#the-init-message)
-    * [The `error` Message](#the-error-message)
-  * [Control Messages](#control-messages)
-    * [The `ping` and `pong` Messages](#the-ping-and-pong-messages)
-  * [Appendix A: BigSize Test Vectors](#appendix-a-bigsize-test-vectors)
-  * [Appendix B: Type-Length-Value Test Vectors](#appendix-b-type-length-value-test-vectors)
-  * [Appendix C: Message Extension](#appendix-c-message-extension)
-  * [Acknowledgments](#acknowledgments)
-  * [References](#references)
-  * [Authors](#authors)
+  * [Connection Handling and Multiplexing(接続の取り扱いと多重化)](#connection-handling-and-multiplexing)
+  * [Lightning Message Format(Lightningメッセージの形式について)](#lightning-message-format)
+  * [Type-Length-Value Format(TLVの形式について)](#type-length-value-format)
+  * [Fundamental Types(主要なタイプ)](#fundamental-types)
+  * [Setup Messages(セットアップメッセージについて)](#setup-messages)
+    * [The `init` Message(`init`メッセージについて)](#the-init-message)
+    * [The `error` Message(`error`メッセージについて)](#the-error-message)
+  * [Control Messages(操作メッセージについて)](#control-messages)
+    * [The `ping` and `pong` Messages(`ping` と `pong` メッセージについて)](#the-ping-and-pong-messages)
+  * [Appendix A: BigSize Test Vectors(付録A: 大きなサイズのテストの方向性)](#appendix-a-bigsize-test-vectors)
+  * [Appendix B: Type-Length-Value Test Vectors(付録B: TLVテストの方向性)](#appendix-b-type-length-value-test-vectors)
+  * [Appendix C: Message Extension(付録C: メッセージ拡張)](#appendix-c-message-extension)
+  * [Acknowledgments(謝辞)](#acknowledgments)
+  * [References(参考文献)](#references)
+  * [Authors(著者)](#authors)
 
 ## Connection Handling and Multiplexing
+#### 接続の取り扱いと多重化
 
-Implementations MUST use a single connection per peer; channel messages (which include a channel ID) are multiplexed over this single connection.
+実装では、ピアごとに1つの接続を確立し、使う必要があります。Channel IDを含んだChannelメッセージはこの確立された1つの接続を介して多重化されます。
 
 ## Lightning Message Format
+#### Lightningメッセージの形式について
 
-After decryption, all Lightning messages are of the form:
+複合化された全てのLightning Networkメッセージの形は次の通りです。
 
-1. `type`: a 2-byte big-endian field indicating the type of message
-2. `payload`: a variable-length payload that comprises the remainder of
-   the message and that conforms to a format matching the `type`
-3. `extension`: an optional [TLV stream](#type-length-value-format)
+1. `type`: 2バイトのビッグエンディアンフィールドで、メッセージのタイプを示します
+2. `payload`: 長さが可変なデータ本体です。 メッセージの残りの部分を構成するもので、
+   `type` に基づいた形式になります。
+3. `extension`: [TLV](#type-length-value-format)オプション用のフィールドです。
 
-The `type` field indicates how to interpret the `payload` field.
-The format for each individual type is defined by a specification in this repository.
-The type follows the _it's ok to be odd_ rule, so nodes MAY send _odd_-numbered types without ascertaining that the recipient understands it.
+`type` フィールドは `payload` フィールドの解釈方法を指定します。
+ここのタイプの形式は、このリポジトリ内の仕様で定義されています。
+タイプは _It's ok to be odd(奇数なら大丈夫)_ ルールに従っていているので、受信者がそれを理解しているかどうかを確認せずに、ノードが奇数タイプのものを送信する場合があります。
 
-The messages are grouped logically into five groups, ordered by the most significant bit that is set:
+メッセージは論理的に5つのグループにグループ化され、設定されている最上位ビットの順に並べられます:
 
-  - Setup & Control (types `0`-`31`): messages related to connection setup, control, supported features, and error reporting (described below)
-  - Channel (types `32`-`127`): messages used to setup and tear down micropayment channels (described in [BOLT #2](02-peer-protocol.md))
-  - Commitment (types `128`-`255`): messages related to updating the current commitment transaction, which includes adding, revoking, and settling HTLCs as well as updating fees and exchanging signatures (described in [BOLT #2](02-peer-protocol.md))
-  - Routing (types `256`-`511`): messages containing node and channel announcements, as well as any active route exploration (described in [BOLT #7](07-routing-gossip.md))
-  - Custom (types `32768`-`65535`): experimental and application-specific messages
+  - Setup & Control (タイプ: `0`-`31`): メッセージはコネクションセットアップ、コントロール、特徴のサポート、エラーの報告に関係します(以下で説明します)
+  - Channel (タイプ `32`-`127`): メッセージはマイクロペイメントチャンネルのセットアップかシャットダウンに使われています ([BOLT #2](02-peer-protocol.md)で説明されています)
+  - Commitment (タイプ `128`-`255`): メッセージは現在の言質取引を更新することに関係します。更新内容には、HTLCのほか、料金の更新を追加したり、無効化したり、決済したりすること、また、署名の交換が含まれます([BOLT #2](02-peer-protocol.md)で説明されています)
+  - Routing (タイプ `256`-`511`): NodeやChannelのアナウンスを含むメッセージ、そのほかにアクティブなRouteの探索するためにも用います([BOLT #7](07-routing-gossip.md)で説明されています)
+  - Custom (タイプ `32768`-`65535`): 実験的、アプリケーション特有のメッセージです。
 
-The size of the message is required by the transport layer to fit into a 2-byte unsigned int; therefore, the maximum possible size is 65535 bytes.
+メッセージのサイズは転送レイヤーに収まるように、2バイトの正の整数である必要があります。よって、65535バイトが最大になります。
 
-A sending node:
-  - MUST NOT send an evenly-typed message not listed here without prior negotiation.
-  - MUST NOT send evenly-typed TLV records in the `extension` without prior negotiation.
-  - that negotiates an option in this specification:
-    - MUST include all the fields annotated with that option.
-  - When defining custom messages:
-    - SHOULD pick a random `type` to avoid collision with other custom types.
-    - SHOULD pick a `type` that doesn't conflict with other experiments listed in [this issue](https://github.com/lightningnetwork/lightning-rfc/issues/716).
-    - SHOULD pick an odd `type` identifiers when regular nodes should ignore the
-      additional data.
-    - SHOULD pick an even `type` identifiers when regular nodes should reject
-      the message and close the connection.
+送信ノード:
+  - 事前の交渉なしに、ここに列挙されていない規則のタイプのメッセージを送信してはなりません。
+  - 事前の交渉なしに、ここに列挙されていない規則のタイプのTLVレコードを`extension`に入れて送信してはなりません。
+  - この仕様書内のオプションを交渉時に取り付けます。
+    - 注釈付きの全てのフィールドはこのオプションをつけなければなりません。
+  - カスタムメッセージを定義する場合:
+    - 他のカスタム`type`との衝突を避けるため、ランダムに`type`を選ぶべきです。
+    - [このIssue](https://github.com/lightningnetwork/lightning-rfc/issues/716) で列挙されているほかの実験と競合しないように`type`を選ぶべきです。
+    - 通常のノードが追加データを無視すべき場合には、奇数の`type`を選ぶべきです。
+    - 通常のノードがメッセージを拒否し、接続を閉じるべき場合には、偶数の`type`を選ぶべきです。
 
-A receiving node:
-  - upon receiving a message of _odd_, unknown type:
-    - MUST ignore the received message.
-  - upon receiving a message of _even_, unknown type:
-    - MUST close the connection.
-    - MAY fail the channels.
-  - upon receiving a known message with insufficient length for the contents:
-    - MUST close the connection.
-    - MAY fail the channels.
-  - upon receiving a message with an `extension`:
-    - MAY ignore the `extension`.
-    - Otherwise, if the `extension` is invalid:
-      - MUST close the connection.
-      - MAY fail the channels.
+受信ノード:
+  - 受信したメッセージが未知の _odd(奇数)_ タイプの場合:
+    - 受信したメッセージは無視されなければなりません。
+  - 受信したメッセージが未知の _even(偶数)_ タイプの場合:
+    - 接続を閉じなければなりません。
+    - Channelを失敗させる(閉じる)ほうが良いです。
+  - 受信したメッセージが既知のメッセージで、長さが不十分な内容である場合:
+    - 接続を閉じなければなりません。
+    - Channelを失敗させる(閉じる)ほうが良いです。
+  - 受信したメッセージが、`extension`を含む場合:
+    - `extension`は無視した方が良いです。
+    - 無視しない場合で、`extension`が無効な場合:
+      - 接続を閉じなければなりません。
+      - Channelを失敗させる(閉じる)ほうが良いです。
 
-### Rationale
+### 理論的根拠
 
-By default `SHA2` and Bitcoin public keys are both encoded as
-big endian, thus it would be unusual to use a different endian for
-other fields.
+`SHA2`の標準とBitcoinの公開鍵は両方ともビッグエンディアンでエンコードされています。
+したがって、ほかのフィールドに別のエンディアンを使うことはめったにありません。
 
-Length is limited to 65535 bytes by the cryptographic wrapping, and
-messages in the protocol are never more than that length anyway.
+メッセージの長さは、暗号化ラッピングにより、65535バイトに制限されています。
+いかなる場合でもプロトコル内のメッセージの長さがこの制限を超えることはありません。
 
-The _it's ok to be odd_ rule allows for future optional extensions
-without negotiation or special coding in clients. The _extension_ field
-similarly allows for future expansion by letting senders include additional
-TLV data. Note that an _extension_ field can only be added when the message
-`payload` doesn't already fill the 65535 bytes maximum length.
+_It's ok to be odd(奇数なら大丈夫)_ ルールはクライアント内での交渉や、特殊なコーディングなしに将来的なオプション拡張を実装可能にします。
+_extension_ フィールドは同様に、送信者が追加TLVデータに将来的な拡張機能を含めることで使用可能にします。
+なお、_extension_ フィールドは、`payload` フィールドが、メッセージの最大長である65535バイトを使い切っていない時にのみ追加できることに注意してください。
 
-Implementations may prefer to have message data aligned on an 8-byte
-boundary (the largest natural alignment requirement of any type here);
-however, adding a 6-byte padding after the type field was considered
-wasteful: alignment may be achieved by decrypting the message into
-a buffer with 6-bytes of pre-padding.
+実装では、メッセージデータを8バイトごとに整列する(分ける?)ことが好まれるかもしれません(ここでは、あらゆるタイプの普通の整列要件の最大値)。
+ただし、_type_ フィールドの後に6バイトのパディング(0?)を追加することは無駄であると見なされました。
+整列は、6バイトのプリパディングを使用してメッセージをバッファに復号化することで実現できます。
 
 ## Type-Length-Value Format
 
